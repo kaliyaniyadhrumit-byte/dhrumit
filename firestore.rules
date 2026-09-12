@@ -1,0 +1,72 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // User Profiles
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId);
+      allow list: if isSignedIn();
+      allow create: if isOwner(userId) && isValidId(userId)
+                    && request.resource.data.id == userId
+                    && request.resource.data.name is string && request.resource.data.name.size() <= 60;
+      allow update: if isOwner(userId) && isValidId(userId)
+                    && request.resource.data.id == userId
+                    && request.resource.data.name is string && request.resource.data.name.size() <= 60;
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // Swipes subcollection
+      match /swipes/{swipeId} {
+        allow read, write: if isOwner(userId) && isValidId(swipeId);
+      }
+    }
+
+    // Matches
+    match /matches/{matchId} {
+      allow read: if isSignedIn() && isValidId(matchId)
+                  && (resource == null || request.auth.uid in resource.data.users);
+      allow create: if isSignedIn() && isValidId(matchId)
+                    && request.auth.uid in request.resource.data.users;
+      allow update: if isSignedIn() && isValidId(matchId)
+                    && request.auth.uid in resource.data.users;
+
+      // Messages inside matches
+      match /messages/{messageId} {
+        allow read: if isSignedIn() && isValidId(messageId);
+        allow create: if isSignedIn() && isValidId(messageId)
+                      && request.resource.data.senderId == request.auth.uid
+                      && request.resource.data.text is string && request.resource.data.text.size() <= 1000;
+        allow update, delete: if false;
+      }
+    }
+
+    // Safe Dates
+    match /safeDates/{dateId} {
+      allow get: if isSignedIn() && isValidId(dateId) && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(dateId)
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && isValidId(dateId)
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && isValidId(dateId) && resource.data.userId == request.auth.uid;
+    }
+  }
+}

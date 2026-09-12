@@ -1,0 +1,6 @@
+{
+  "name": "HerVibe - Dating & Match",
+  "description": "A modern, safe dating experience with balanced duo discovery, AI compatibility matching, and exclusive affordable Girls-Only Premium perks.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

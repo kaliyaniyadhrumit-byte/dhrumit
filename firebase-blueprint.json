@@ -1,0 +1,107 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Stores dating profile, verification, gender, and security metrics",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 60 },
+        "email": { "type": "string", "maxLength": 100 },
+        "photoURL": { "type": "string", "maxLength": 500 },
+        "gender": { "type": "string", "enum": ["female", "male"] },
+        "age": { "type": "number" },
+        "city": { "type": "string", "maxLength": 80 },
+        "profession": { "type": "string", "maxLength": 80 },
+        "bio": { "type": "string", "maxLength": 500 },
+        "interests": { "type": "array" },
+        "isVerified": { "type": "boolean" },
+        "safetyScore": { "type": "number" },
+        "isGirlsPremium": { "type": "boolean" },
+        "videoVerified": { "type": "boolean" },
+        "govtVerified": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name", "gender", "age", "city"]
+    },
+    "Swipe": {
+      "title": "Swipe",
+      "description": "Recorded swipe action by a user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "targetProfileId": { "type": "string", "maxLength": 128 },
+        "direction": { "type": "string", "enum": ["like", "dislike", "superlike"] },
+        "timestamp": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "userId", "targetProfileId", "direction"]
+    },
+    "Match": {
+      "title": "Match",
+      "description": "Mutual connection between two profiles",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "users": { "type": "array" },
+        "lastMessage": { "type": "string", "maxLength": 500 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "users"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message sent in a match",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "matchId": { "type": "string", "maxLength": 128 },
+        "senderId": { "type": "string", "maxLength": 128 },
+        "text": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string", "maxLength": 50 },
+        "isAiGenerated": { "type": "boolean" },
+        "isVoiceNote": { "type": "boolean" }
+      },
+      "required": ["id", "matchId", "senderId", "text"]
+    },
+    "SafeDate": {
+      "title": "SafeDate",
+      "description": "Verified public venue date itinerary with safety tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "matchName": { "type": "string", "maxLength": 100 },
+        "venue": { "type": "string", "maxLength": 150 },
+        "city": { "type": "string", "maxLength": 80 },
+        "dateTime": { "type": "string", "maxLength": 50 },
+        "emergencyContact": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["planned", "in_progress", "completed", "cancelled"] }
+      },
+      "required": ["id", "userId", "matchName", "venue"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with safety score, verification status, and preferences"
+    },
+    "/users/{userId}/swipes/{swipeId}": {
+      "schema": "Swipe",
+      "description": "Swipes made by the user"
+    },
+    "/matches/{matchId}": {
+      "schema": "Match",
+      "description": "Mutual matches between users"
+    },
+    "/matches/{matchId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Real-time chat messages"
+    },
+    "/safeDates/{dateId}": {
+      "schema": "SafeDate",
+      "description": "Safe date check-ins and venue verification"
+    }
+  }
+}
