@@ -1,0 +1,28 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "HerVibe",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "HerVibe",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "Dating and match application with Trust &amp; Safety features",
+  "id": "HerVibe",
+  "lang": "en",
+  "display_override": [
+    "browser",
+    "fullscreen",
+    "window-controls-overlay",
+    "minimal-ui",
+    "standalone"
+  ],
+  "categories": [
+    "dating",
+    "social"
+  ],
+  "share_target": {
+    "method": "GET"
+  }
+}
